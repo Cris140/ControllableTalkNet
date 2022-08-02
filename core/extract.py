@@ -130,9 +130,6 @@ class ExtractDuration:
             .eval()
         )
         self.run_path = run_path
-        self.arpadict = self._load_dictionary(
-            os.path.join(run_path, "horsewords.clean")
-        )
         self.parser = AudioToCharWithDursF0Dataset.make_vocab(
             notation="phonemes",
             punct=True,
@@ -142,28 +139,10 @@ class ExtractDuration:
         )
         self.device = device
 
-    def _load_dictionary(self, dict_path):
-        arpadict = dict()
-        with open(dict_path, "r", encoding="utf8") as f:
-            for line in f.readlines():
-                word = line.split("  ")
-                assert len(word) == 2
-                arpadict[word[0].strip().upper()] = word[1].strip()
-        return arpadict
-
-    def _replace_words(self, input, dictionary):
-        regex = re.findall(r"[\w'-]+|[^\w'-]", input)
-        assert input == "".join(regex)
-        for i in range(len(regex)):
-            word = regex[i].upper()
-            if word in dictionary.keys():
-                regex[i] = "{" + dictionary[word] + "}"
-        return "".join(regex)
-
     def _arpa_parse(self, input):
         z = []
         space = self.parser.labels.index(" ")
-        input = self._replace_words(input, self.arpadict)
+        input = self.input
         input = input.replace("\n", " \n")
         input = input.replace(".", ". ")
         while "{" in input:
