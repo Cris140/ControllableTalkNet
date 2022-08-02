@@ -252,7 +252,7 @@ class ExtractDuration:
     def get_tokens(self, transcript):
         token_list = self.transcript
         tokens = torch.IntTensor(token_list).view(1, -1).to(self.device)
-        arpa = self._to_arpa(token_list)
+        arpa = self.token_list
         return token_list, tokens, arpa
 
     def get_duration(self, wav_name, transcript, tokens, use_conv=True):
